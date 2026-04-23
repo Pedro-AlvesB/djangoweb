@@ -18,6 +18,9 @@ services:
       - 5432
   web:
     build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app/
     container_name: ${CHAVE_CONTAINER_NAME}
     ports:
       - ${CHAVE_PORT}:8000
