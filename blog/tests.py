@@ -13,7 +13,7 @@ from .models import Post
 class PostModelTest(TestCase):
 
     def setUp(self):
-        self.user = user.objects.create_user(
+        self.user = User.objects.create_user(
             username='febrace',
             password='febrace123'
         )
@@ -35,18 +35,15 @@ class PostModelTest(TestCase):
         self.post.publish()
         self.assertIsNotNone(self.post.published_date)
 
-    def teste_publish_define_data_proxima_ao_momento_atual():
-        antes = timezone.now()
+    def teste_publish_date_maior_create_date(self):
         self.post.publish()
-        depois = timezone.now()
-        self.assertGreaterEqual(self.post.published_date, antes)
-        self.assertLessEqual(self.post.published_date, depois)
+        self.assertGreaterEqual(self.post.published_date, self.post.created_date)
 
 # ============================================================
-# TESTES DO VIEW POST
+# TESTES DO VIEW
 # ============================================================
 
-class ModelViewTest(TestCase):
+class BlogViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -55,16 +52,85 @@ class ModelViewTest(TestCase):
             password='febrace123'    
         )
 
-    def teste_post_list_retorna_200():
+    def teste_post_list_retorna_200(self):
         response = self.client.get(reverse('post_list'))
         self.assertEqual(response.status_code, 200)
+
+    def teste_acessa_template(self):
+        response = self.client.get(reverse('post_list'))
         self.assertTemplateUsed(response, 'blog/post_list.html')
 
     def test_post_nao_publicado_nao_aparece_na_lista(self):
-        Post.objects.create(
+        post = Post.objects.create(
             author=self.user,
             title='Post rascunho',
             text='Ainda não publicado'
         )
         response = self.client.get(reverse('post_list'))
         self.assertNotContains(response, 'Post rascunho')
+
+    def test_post_publicado_aparece_na_lista(self):
+        post = Post.objects.create(
+            author=self.user,
+            title='Post publicado',
+            text='Texto publicado',
+            published_date=timezone.now()
+        )
+        response = self.client.get(reverse('post_list'))
+        self.assertContains(response, 'Post publicado')
+
+class PostDetailViewTest(TestCase):
+    
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='febrace',
+            password='febrace123'
+        )
+        self.post = Post.objects.create(
+            author=self.user,
+            title='Post detalhado',
+            text='Text detalhado',
+            published_date=timezone.now()
+        )
+
+    def test_post_datail_retorna_200(self):
+        response = self.client.get(reverse('post_detail', kwargs={'pk': self.post.pk}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_detail_retorna_404_para_post_inexistente(self):
+        response = self.client.get(reverse('post_detail', kwargs={'pk': 9999}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_detail_exibe_titulo_e_texto(self):
+        self.client.login(username="febrace", password="febrace")
+        response = self.client.get(reverse('post_detail', kwargs={'pk': self.post.pk}))
+        self.assertContains(response, 'Post detalhado')
+        self.assertContains(response, 'Text detalhado')
+
+class PostNewViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client(),
+        self.user = User.objects.create_user(
+            username='febrace',
+            password='febrace123'
+        )
+    
+
+
+
+class PostEditViewTest(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='febrace',
+            password='senha123'
+        )
+        self.post = Post.objects.create(
+            author=self.user,
+            title='Post original',
+            text='Texto original',
+            published_date=timezone.now()
+        )
