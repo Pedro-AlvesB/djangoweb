@@ -116,6 +116,36 @@ class PostNewViewTest(TestCase):
             username='febrace',
             password='febrace123'
         )
+        
+    def test_post_new_redireciona_sem_login(self):
+        """Criar post sem estar logado redireciona para login"""
+        response = self.client.get(reverse('post_new'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_post_new_acessivel_com_login(self):
+        """Criar post com login retorna 200"""
+        self.client.login(username='febrace', password='senha123')
+        response = self.client.get(reverse('post_new'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_new_cria_post_com_dados_validos(self):
+        """POST com dados válidos cria o post e redireciona"""
+        self.client.login(username='febrace', password='senha123')
+        response = self.client.post(reverse('post_new'), {
+            'title': 'Post criado no teste',
+            'text': 'Texto do post criado no teste'
+        })
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(response.status_code, 302)
+
+    def test_post_new_nao_cria_com_dados_invalidos(self):
+        """POST sem título não cria o post"""
+        self.client.login(username='febrace', password='senha123')
+        self.client.post(reverse('post_new'), {
+            'title': '',  # título vazio = inválido
+            'text': 'Texto qualquer'
+        })
+        self.assertEqual(Post.objects.count(), 0)
     
 
 
@@ -134,3 +164,25 @@ class PostEditViewTest(TestCase):
             text='Texto original',
             published_date=timezone.now()
         )
+
+
+    def test_post_edit_redireciona_sem_login(self):
+        """Editar post sem login redireciona"""
+        response = self.client.get(reverse('post_edit', kwargs={'pk': self.post.pk}))
+        self.assertEqual(response.status_code, 302)
+
+    def test_post_edit_acessivel_com_login(self):
+        """Editar post com login retorna 200"""
+        self.client.login(username='febrace', password='senha123')
+        response = self.client.get(reverse('post_edit', kwargs={'pk': self.post.pk}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_edit_atualiza_post(self):
+        """Editar post com dados válidos salva as alterações"""
+        self.client.login(username='febrace', password='senha123')
+        self.client.post(reverse('post_edit', kwargs={'pk': self.post.pk}), {
+            'title': 'Título atualizado',
+            'text': 'Texto atualizado'
+        })
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.title, 'Título atualizado')
