@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+<h1>Login</h1>
+
+<form method="post"> 
+    {% csrf_token %}
+    
+    {{form.as_p}}
+    
+    <!-- <div class=""></div>
+    {{form.username.label}}
+    {{form.username}}
+    {{form.email.label}}
+    {{form.email}}
+    {{form.password1.label}}
+    {{form.password1}}
+    {{form.password2.label}}
+    {{form.password2}} -->
+
+    <button type="submit">Entrar</button>
+</form>
+
+{% endblock %}
