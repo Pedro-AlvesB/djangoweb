@@ -15,15 +15,17 @@ class EmailValidacaoTest(TestCase):
     def test_email_duplicado_invalida_formulario(self):
         form = RegisterUserForm(data={
             'username': 'outro',
-            'email': 'febrace@email.com',  # email já existe!
-            'password': 'senha123'
+            'email': 'febrace@email.com',
+            'password1': 'senhaForte123!',
+            'password2': 'senhaForte123!'
         })
-        self.assertFalse(form.is_valid())  # deve ser inválido
+        self.assertFalse(form.is_valid())
 
     def test_email_novo_valida_formulario(self):
         form = RegisterUserForm(data={
             'username': 'novo',
-            'email': 'novo@email.com',  # email novo
-            'password': 'senha123'
+            'email': 'novo@email.com',
+            'password1': 'senhaForte123!',
+            'password2': 'senhaForte123!'
         })
-        self.assertTrue(form.is_valid())  # deve ser válido
+        self.assertTrue(form.is_valid())

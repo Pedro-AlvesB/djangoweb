@@ -25,7 +25,7 @@ class RegisterUserForm(UserCreationForm):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
             raise ValidationError('este email já esta em uso')
-            return email
+        return email
         
     class Meta(UserCreationForm.Meta):
         model = User
