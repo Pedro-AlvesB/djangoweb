@@ -27,6 +27,8 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
+LOGIN_REDIRECT_URL = '/blog'
+LOGOUT_REDIRECT_URL = None
 
 # Application definition
 

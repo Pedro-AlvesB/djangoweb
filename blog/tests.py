@@ -103,6 +103,7 @@ class PostDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_post_detail_exibe_titulo_e_texto(self):
+        """"""
         self.client.login(username="febrace", password="febrace")
         response = self.client.get(reverse('post_detail', kwargs={'pk': self.post.pk}))
         self.assertContains(response, 'Post detalhado')
@@ -111,7 +112,7 @@ class PostDetailViewTest(TestCase):
 class PostNewViewTest(TestCase):
 
     def setUp(self):
-        self.client = Client(),
+        self.client = Client()
         self.user = User.objects.create_user(
             username='febrace',
             password='febrace123'
@@ -124,13 +125,13 @@ class PostNewViewTest(TestCase):
 
     def test_post_new_acessivel_com_login(self):
         """Criar post com login retorna 200"""
-        self.client.login(username='febrace', password='senha123')
+        self.client.login(username='febrace', password='febrace123')
         response = self.client.get(reverse('post_new'))
         self.assertEqual(response.status_code, 200)
 
     def test_post_new_cria_post_com_dados_validos(self):
         """POST com dados válidos cria o post e redireciona"""
-        self.client.login(username='febrace', password='senha123')
+        self.client.login(username='febrace', password='febrace123')
         response = self.client.post(reverse('post_new'), {
             'title': 'Post criado no teste',
             'text': 'Texto do post criado no teste'
@@ -140,7 +141,7 @@ class PostNewViewTest(TestCase):
 
     def test_post_new_nao_cria_com_dados_invalidos(self):
         """POST sem título não cria o post"""
-        self.client.login(username='febrace', password='senha123')
+        self.client.login(username='febrace', password='febrace123')
         self.client.post(reverse('post_new'), {
             'title': '',  # título vazio = inválido
             'text': 'Texto qualquer'

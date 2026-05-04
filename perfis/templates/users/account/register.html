@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1>Login</h1>
+<h1>Registrar</h1>
 
 <form method="post"> 
     {% csrf_token %}
@@ -19,7 +19,8 @@
     {{form.password2.label}}
     {{form.password2}} -->
 
-    <button type="submit">Entrar</button>
+    <button type="submit">registrar</button>
 </form>
+<a href="{% url 'login' %}" class="py-2">já possui uma conta?</a>
 
 {% endblock %}
